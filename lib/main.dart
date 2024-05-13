@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
       result = 'B4';
     } else if (closed.toString() == [1,0,0,0,0].toString()) {
       player.play(AssetSource('C5.mp3'));
-      result = 'C5';
+      result = 'C56';
     } else if (closed.toString() == [0,1,0,0,0].toString() || closed.toString() == [1,1,0,0,0].toString()) {
       player.play(AssetSource('D5.mp3'));
       result = 'D5';
