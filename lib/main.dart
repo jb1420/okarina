@@ -1,7 +1,7 @@
-// ignore_for_file: avoid_print, prefer_const_constructors
+import 'dart:nativewrappers/_internal/vm/lib/internal_patch.dart';
 
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,16 +10,15 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'OKARINA Page',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'OKARINA Page'),
     );
   }
 }
@@ -35,172 +34,251 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var closed = [0, 0, 0, 0, 0];
-  late AudioCache cache;
-  AudioPlayer player = AudioPlayer();
+  final Map<String, AudioPlayer> players = {};
+  var last_note = 'C4.mp3';
+  final List<String> notes= [
+    'C4.mp3',
+    'D4.mp3',
+    'E4.mp3',
+    'F4.mp3',
+    'G4.mp3',
+    'A4.mp3',
+    'B4.mp3',
+    'C5.mp3',
+    'D5.mp3'
+  ];
+
+  late Future<void> _loadingFuture;
 
   @override
   void initState() {
     super.initState();
-    cache = AudioCache(prefix: 'assets/',);
-    player.setPlayerMode(PlayerMode.lowLatency);
-    preloadAudio();
+    _loadingFuture = preloadAudio();
   }
 
-  void preloadAudio(){
-    cache.loadAll(['C4.mp3', 'D4.mp3', 'E4.mp3', 'F4.mp3', 'G4.mp3', 'A4.mp3', 'B4.mp3', 'C5.mp3', 'D5.mp3']);
+  Future<void> preloadAudio() async {
+    for (var note in notes) {
+      var player = AudioPlayer();
+      await player.setAsset('assets/$note');
+      players[note] = player;
+    }
   }
 
+  void playNote(String note) async {
+    print("Playing note: $note, last note: $last_note");
+    
+    var player = players[note];
+    if (player != null) {
+      await player.play(); // Play the note
+    }
+    var player_2 = players[last_note];
+    if (player_2 != null) {
+      await player_2.stop(); // Stop the last note
+    }
+    last_note = note;
+    
+  }
 
-  String note() {
-    var result = 'NOTHING'; // 기본 결과
-    player.pause();
+  String getNote() {
+    var result = 'NOTHING';
 
-    if (closed.toString() == [0,1,1,1,1].toString()) {
-      player.play(AssetSource('C4.mp3'));
+    if (closed.toString() == [0, 1, 1, 1, 1].toString()) {
+      playNote('C4.mp3');
       result = 'C4';
-    } else if (closed.toString() == [0,1,1,0,1].toString()) {
-      player.play(AssetSource('D4.mp3'));
+    } else if (closed.toString() == [0, 1, 1, 0, 1].toString()) {
+      playNote('D4.mp3');
       result = 'D4';
-    } else if (closed.toString() == [0,1,1,1,0].toString()) {
-      player.play(AssetSource('E4.mp3'));
+    } else if (closed.toString() == [0, 1, 1, 1, 0].toString()) {
+      playNote('E4.mp3');
       result = 'E4';
-    } else if (closed.toString() == [0,1,1,0,0].toString()) {
-      player.play(AssetSource('F4.mp3'));
+    } else if (closed.toString() == [0, 1, 1, 0, 0].toString()) {
+      playNote('F4.mp3');
       result = 'F4';
-    } else if (closed.toString() == [0,0,1,0,1].toString()) {
-      player.play(AssetSource('G4.mp3'));
+    } else if (closed.toString() == [0, 0, 1, 0, 1].toString()) {
+      playNote('G4.mp3');
       result = 'G4';
-    } else if (closed.toString() == [0,0,1,0,0].toString()) {
-      player.play(AssetSource('A4.mp3'));
+    } else if (closed.toString() == [0, 0, 1, 0, 0].toString()) {
+      playNote('A4.mp3');
       result = 'A4';
-    } else if (closed.toString() == [0,0,0,1,0].toString()) {
-      player.play(AssetSource('B4.mp3'));
+    } else if (closed.toString() == [0, 0, 0, 1, 0].toString()) {
+      playNote('B4.mp3');
       result = 'B4';
-    } else if (closed.toString() == [1,0,0,0,0].toString()) {
-      player.play(AssetSource('C5.mp3'));
+    } else if (closed.toString() == [1, 0, 0, 0, 0].toString()) {
+      playNote('C5.mp3');
       result = 'C5';
-    } else if (closed.toString() == [0,1,0,0,0].toString() || closed.toString() == [1,1,0,0,0].toString()) {
-      player.play(AssetSource('D5.mp3'));
+    } else if (closed.toString() == [0, 1, 0, 0, 0].toString() ||
+        closed.toString() == [1, 1, 0, 0, 0].toString()) {
+      playNote('D5.mp3');
       result = 'D5';
     }
 
     return result;
   }
 
+  void updateButtonState(int index, bool isPressed) {
+    setState(() {
+      closed[index] = isPressed ? 1 : 0;
+    });
+    getNote(); // Play the note immediately when the button state changes
+  }
+
+  @override
+  void dispose() {
+    // Dispose all players
+    players.forEach((key, player) {
+      player.dispose();
+    });
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title),
-        ),
-        body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(
-              '${closed} ${note()}',
-              style: TextStyle(fontSize: 30),
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GestureDetector(
-                      onTapDown: (a1) {
-                        setState(() {
-                          closed[0] = 1;
-                        });
-                      },
-                      onTapUp: (a) {
-                        setState(() {
-                          closed[0] = 0;
-                        });
-                      },
-                      child: Container(
-                          width: 100,
-                          height: 100,
-                          margin: const EdgeInsets.all(40),
-                          color: closed[0] == 1 ? Colors.red : Colors.blue,
-                          child: Text("1")),
-                    ),
-                    GestureDetector(
-                      onTapDown: (a2) {
-                        setState(() {
-                          closed[1] = 1;
-                        });
-                      },
-                      onTapUp: (a) {
-                        setState(() {
-                          closed[1] = 0;
-                        });
-                      },
-                      child: Container(
-                          width: 100,
-                          height: 100,
-                          margin: const EdgeInsets.all(40),
-                          color: closed[1] == 1 ? Colors.red : Colors.blue,
-                          child: Text("2")),
-                    ),
-                    GestureDetector(
-                      onTapDown: (a3) {
-                        setState(() {
-                          closed[2] = 1;
-                        });
-                      },
-                      onTapUp: (a) {
-                        setState(() {
-                          closed[2] = 0;
-                        });
-                      },
-                      child: Container(
-                          width: 100,
-                          height: 100,
-                          margin: const EdgeInsets.all(40),
-                          color: closed[2] == 1 ? Colors.red : Colors.blue,
-                          child: Text("3")),
-                    ),
-                  ]),
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GestureDetector(
-                      onTapDown: (a4) {
-                        setState(() {
-                          closed[3] = 1;
-                        });
-                      },
-                      onTapUp: (a) {
-                        setState(() {
-                          closed[3] = 0;
-                        });
-                      },
-                      child: Container(
-                          width: 100,
-                          height: 100,
-                          margin: const EdgeInsets.all(40),
-                          color: closed[3] == 1 ? Colors.red : Colors.blue,
-                          child: Text("4")),
-                    ),
-                    GestureDetector(
-                      onTapDown: (a5) {
-                        setState(() {
-                          closed[4] = 1;
-                        });
-                      },
-                      onTapUp: (a) {
-                        setState(() {
-                          closed[4] = 0;
-                        });
-                      },
-                      child: Container(
-                          width: 100,
-                          height: 100,
-                          margin: const EdgeInsets.all(40),
-                          color: closed[4] == 1 ? Colors.red : Colors.blue,
-                          child: Text("5")),
-                    ),
-                  ])
-            ])
-          ]),
-        ));
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text(widget.title),
+      ),
+      body: FutureBuilder<void>(
+        future: _loadingFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error loading assets'),
+            );
+          } else {
+            return buildMainContent(context);
+          }
+        },
+      ),
+    );
+  }
+
+  Widget buildMainContent(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double buttonSize = constraints.maxWidth < 600 ? 80 : 120;
+        double spacing = constraints.maxWidth < 600 ? 40 : 60;
+        double columnSpacing = constraints.maxWidth < 600 ? 40 : 80;
+
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                getNote(),
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: columnSpacing),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      for (int i = 0; i < 3; i++) ...[
+                        GestureDetector(
+                          onTapDown: (_) {
+                            updateButtonState(i, true);
+                          },
+                          onTapUp: (_) {
+                            updateButtonState(i, false);
+                          },
+                          onTapCancel: () {
+                            updateButtonState(i, false);
+                          },
+                          onPanEnd: (_) {
+                            updateButtonState(i, false);
+                          },
+                          child: Container(
+                            width: buttonSize,
+                            height: buttonSize,
+                            margin: EdgeInsets.all(spacing / 2),
+                            decoration: BoxDecoration(
+                              color: closed[i] == 1 ? Colors.blueAccent : Colors.blue,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  offset: Offset(2, 2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${i + 1}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: buttonSize / 2.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: spacing),
+                      ],
+                    ],
+                  ),
+                  SizedBox(width: columnSpacing),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      for (int i = 3; i < 5; i++) ...[
+                        GestureDetector(
+                          onTapDown: (_) {
+                            updateButtonState(i, true);
+                          },
+                          onTapUp: (_) {
+                            updateButtonState(i, false);
+                          },
+                          onTapCancel: () {
+                            updateButtonState(i, false);
+                          },
+                          onPanEnd: (_) {
+                            updateButtonState(i, false);
+                          },
+                          child: Container(
+                            width: buttonSize,
+                            height: buttonSize,
+                            margin: EdgeInsets.all(spacing / 2),
+                            decoration: BoxDecoration(
+                              color: closed[i] == 1 ? Colors.blueAccent : Colors.blue,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  offset: Offset(2, 2),
+                                  blurRadius: 4,
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                '${i + 1}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: buttonSize / 2.5,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (i == 3) SizedBox(height: spacing),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
