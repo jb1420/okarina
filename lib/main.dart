@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/internal_patch.dart';
-
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -34,9 +32,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var closed = [0, 0, 0, 0, 0];
+  var ex_note = 0;
   final Map<String, AudioPlayer> players = {};
-  var last_note = 'C4.mp3';
-  final List<String> notes= [
+  final List<String> notes = [
     'C4.mp3',
     'D4.mp3',
     'E4.mp3',
@@ -64,54 +62,47 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void playNote(String note) async {
-    print("Playing note: $note, last note: $last_note");
-    
+  void playNote(String note)  {
     var player = players[note];
     if (player != null) {
-      await player.play(); // Play the note
+      player.play(); // Play the note
     }
-    var player_2 = players[last_note];
-    if (player_2 != null) {
-      await player_2.stop(); // Stop the last note
+  }
+
+  void stopNote() {
+    var player = players[ex_note];
+    if (player != null) {
+      player.stop(); // Stop the note
     }
-    last_note = note;
-    
   }
 
   String getNote() {
     var result = 'NOTHING';
 
     if (closed.toString() == [0, 1, 1, 1, 1].toString()) {
-      playNote('C4.mp3');
       result = 'C4';
     } else if (closed.toString() == [0, 1, 1, 0, 1].toString()) {
-      playNote('D4.mp3');
       result = 'D4';
     } else if (closed.toString() == [0, 1, 1, 1, 0].toString()) {
-      playNote('E4.mp3');
       result = 'E4';
     } else if (closed.toString() == [0, 1, 1, 0, 0].toString()) {
-      playNote('F4.mp3');
       result = 'F4';
     } else if (closed.toString() == [0, 0, 1, 0, 1].toString()) {
-      playNote('G4.mp3');
       result = 'G4';
     } else if (closed.toString() == [0, 0, 1, 0, 0].toString()) {
-      playNote('A4.mp3');
       result = 'A4';
     } else if (closed.toString() == [0, 0, 0, 1, 0].toString()) {
-      playNote('B4.mp3');
       result = 'B4';
     } else if (closed.toString() == [1, 0, 0, 0, 0].toString()) {
-      playNote('C5.mp3');
       result = 'C5';
     } else if (closed.toString() == [0, 1, 0, 0, 0].toString() ||
         closed.toString() == [1, 1, 0, 0, 0].toString()) {
-      playNote('D5.mp3');
       result = 'D5';
     }
 
+    playNote('$result.mp3');
+    stopNote();
+    ex_note = notes.indexOf(result + '.mp3');
     return result;
   }
 
@@ -122,14 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
     getNote(); // Play the note immediately when the button state changes
   }
 
-  @override
-  void dispose() {
-    // Dispose all players
-    players.forEach((key, player) {
-      player.dispose();
-    });
-    super.dispose();
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                getNote(),
+                'Current Note: ${getNote()}',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: columnSpacing),
