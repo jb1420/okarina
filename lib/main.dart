@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,10 +12,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'OKARINA Page',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
       home: const MyHomePage(title: 'OKARINA Page'),
     );
   }
@@ -31,9 +27,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var closed = [0, 0, 0, 0, 0];
-  var ex_note = 0;
-  final Map<String, AudioPlayer> players = {};
+  late Future<void> _loadingFuture;
   final List<String> notes = [
     'C4.mp3',
     'D4.mp3',
@@ -43,77 +37,25 @@ class _MyHomePageState extends State<MyHomePage> {
     'A4.mp3',
     'B4.mp3',
     'C5.mp3',
-    'D5.mp3'
+    'D5.mp3',
   ];
-
-  late Future<void> _loadingFuture;
+  List<AudioPlayer> players = [];
 
   @override
   void initState() {
     super.initState();
-    _loadingFuture = preloadAudio();
+    _loadingFuture = _loadData();
   }
 
-  Future<void> preloadAudio() async {
-    for (var note in notes) {
+  Future<void> _loadData() async {
+    for (var note in notes){
       var player = AudioPlayer();
-      await player.setAsset('assets/$note');
-      players[note] = player;
+      await player.setSource(AssetSource("assets/$note"));  // 요기가 문제임
+      // player.resume();
+      // player.pause();
+      players.add(player);
     }
   }
-
-  void playNote(String note)  {
-    var player = players[note];
-    if (player != null) {
-      player.play(); // Play the note
-    }
-  }
-
-  void stopNote() {
-    var player = players[ex_note];
-    if (player != null) {
-      player.stop(); // Stop the note
-    }
-  }
-
-  String getNote() {
-    var result = 'NOTHING';
-
-    if (closed.toString() == [0, 1, 1, 1, 1].toString()) {
-      result = 'C4';
-    } else if (closed.toString() == [0, 1, 1, 0, 1].toString()) {
-      result = 'D4';
-    } else if (closed.toString() == [0, 1, 1, 1, 0].toString()) {
-      result = 'E4';
-    } else if (closed.toString() == [0, 1, 1, 0, 0].toString()) {
-      result = 'F4';
-    } else if (closed.toString() == [0, 0, 1, 0, 1].toString()) {
-      result = 'G4';
-    } else if (closed.toString() == [0, 0, 1, 0, 0].toString()) {
-      result = 'A4';
-    } else if (closed.toString() == [0, 0, 0, 1, 0].toString()) {
-      result = 'B4';
-    } else if (closed.toString() == [1, 0, 0, 0, 0].toString()) {
-      result = 'C5';
-    } else if (closed.toString() == [0, 1, 0, 0, 0].toString() ||
-        closed.toString() == [1, 1, 0, 0, 0].toString()) {
-      result = 'D5';
-    }
-
-    playNote('$result.mp3');
-    stopNote();
-    ex_note = notes.indexOf(result + '.mp3');
-    return result;
-  }
-
-  void updateButtonState(int index, bool isPressed) {
-    setState(() {
-      closed[index] = isPressed ? 1 : 0;
-    });
-    getNote(); // Play the note immediately when the button state changes
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -142,127 +84,92 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget buildMainContent(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double buttonSize = constraints.maxWidth < 600 ? 80 : 120;
-        double spacing = constraints.maxWidth < 600 ? 40 : 60;
-        double columnSpacing = constraints.maxWidth < 600 ? 40 : 80;
+    return Container(
+      color: Colors.black,
+      child: Center(
+        child: Stack(
+          children: [
+            Container(
+              // color: Colors.white,
+              width: double.infinity,
+              height: 400,
+            ),
+            Positioned(
+              left: 74,
+              top: 0,
+              width: 60,
+              height: 60,
+              child: GestureDetector(
+                onPanDown: (details) {
+                  // resume
+                },
+                onPanEnd: (details) {
+                  // pause
+                  // stop
+                  // resume
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 104,
+              top: 151,
+              width: 70,
+              height: 70,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.all(Radius.circular(35)),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 64,
+              bottom: 0,
+              width: 80,
+              height: 80,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.all(Radius.circular(40)),
+                ),
+              ),
+            ),
 
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Current Note: ${getNote()}',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+
+
+            Positioned(
+              right: 78,
+              top: 50,
+              width: 70,
+              height: 70,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.all(Radius.circular(35)),
+                ),
               ),
-              SizedBox(height: columnSpacing),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      for (int i = 0; i < 3; i++) ...[
-                        GestureDetector(
-                          onTapDown: (_) {
-                            updateButtonState(i, true);
-                          },
-                          onTapUp: (_) {
-                            updateButtonState(i, false);
-                          },
-                          onTapCancel: () {
-                            updateButtonState(i, false);
-                          },
-                          onPanEnd: (_) {
-                            updateButtonState(i, false);
-                          },
-                          child: Container(
-                            width: buttonSize,
-                            height: buttonSize,
-                            margin: EdgeInsets.all(spacing / 2),
-                            decoration: BoxDecoration(
-                              color: closed[i] == 1 ? Colors.blueAccent : Colors.blue,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  offset: Offset(2, 2),
-                                  blurRadius: 4,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                '${i + 1}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: buttonSize / 2.5,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: spacing),
-                      ],
-                    ],
-                  ),
-                  SizedBox(width: columnSpacing),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      for (int i = 3; i < 5; i++) ...[
-                        GestureDetector(
-                          onTapDown: (_) {
-                            updateButtonState(i, true);
-                          },
-                          onTapUp: (_) {
-                            updateButtonState(i, false);
-                          },
-                          onTapCancel: () {
-                            updateButtonState(i, false);
-                          },
-                          onPanEnd: (_) {
-                            updateButtonState(i, false);
-                          },
-                          child: Container(
-                            width: buttonSize,
-                            height: buttonSize,
-                            margin: EdgeInsets.all(spacing / 2),
-                            decoration: BoxDecoration(
-                              color: closed[i] == 1 ? Colors.blueAccent : Colors.blue,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  offset: Offset(2, 2),
-                                  blurRadius: 4,
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                '${i + 1}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: buttonSize / 2.5,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (i == 3) SizedBox(height: spacing),
-                      ],
-                    ],
-                  ),
-                ],
+            ),
+            Positioned(
+              right: 64,
+              bottom: 86,
+              width: 75,
+              height: 75,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.all(Radius.circular(35)),
+                ),
               ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
