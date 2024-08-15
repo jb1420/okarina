@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 
@@ -41,6 +43,8 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
   List<AudioPlayer> players = [];
 
+  var color1 = Colors.blue;
+
   @override
   void initState() {
     super.initState();
@@ -50,9 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _loadData() async {
     for (var note in notes){
       var player = AudioPlayer();
-      await player.setSource(AssetSource("assets/$note"));  // 요기가 문제임
-      // player.resume();
-      // player.pause();
+      await player.setSource(AssetSource(note));
+      player.resume();
+      player.pause();
       players.add(player);
     }
   }
@@ -90,7 +94,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Stack(
           children: [
             Container(
-              // color: Colors.white,
               width: double.infinity,
               height: 400,
             ),
@@ -101,16 +104,22 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 60,
               child: GestureDetector(
                 onPanDown: (details) {
-                  // resume
+                  setState(() {
+                    color1 = Colors.red;
+                  });
+                  players[0].resume();
                 },
                 onPanEnd: (details) {
-                  // pause
-                  // stop
-                  // resume
+                  setState(() {
+                    color1 = Colors.blue;
+                  });
+                  players[0].stop();
+                  players[0].resume();
+                  players[0].pause();
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: color1,
                     borderRadius: BorderRadius.all(Radius.circular(30)),
                   ),
                 ),
