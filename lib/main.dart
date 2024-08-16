@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:collection/collection.dart';
 
 void main() {
   runApp(const MyApp());
@@ -44,6 +45,54 @@ class _MyHomePageState extends State<MyHomePage> {
   List<AudioPlayer> players = [];
 
   var color1 = Colors.blue;
+  var color2 = Colors.blue;
+
+  var clicked_list = [0,0,0,0,0];
+
+  var ex_played = 0;
+
+  void playSound(){
+    players[ex_played].stop();
+    
+    if(ListEquality().equals(clicked_list, [0,1,1,1,1])){
+      players[0].resume();
+      ex_played = 0;
+    }
+    else if(ListEquality().equals(clicked_list, [0,1,1,0,1])){
+      players[1].resume();
+      ex_played = 1;
+    }
+    else if(ListEquality().equals(clicked_list, [0,1,1,1,0])){
+      players[2].resume();
+      ex_played = 2;
+    }
+    else if(ListEquality().equals(clicked_list, [0,1,1,0,0])){
+      players[3].resume();
+      ex_played = 3;
+    }
+    else if(ListEquality().equals(clicked_list, [0,0,1,0,1])){
+      players[4].resume();
+      ex_played = 4;
+    }
+    else if(ListEquality().equals(clicked_list, [0,0,1,0,0])){
+      players[5].resume();
+      ex_played = 5;
+    }
+    else if(ListEquality().equals(clicked_list, [0,0,0,1,0])){
+      players[6].resume();
+      ex_played = 6;
+    }
+    else if(ListEquality().equals(clicked_list, [1,0,0,0,0])){
+      players[7].resume();
+      ex_played = 7;
+    }
+    else if(ListEquality().equals(clicked_list, [0,1,0,0,0])){
+      players[8].resume();
+      ex_played = 8;
+    }
+
+
+  }
 
   @override
   void initState() {
@@ -105,35 +154,48 @@ class _MyHomePageState extends State<MyHomePage> {
               child: GestureDetector(
                 onPanDown: (details) {
                   setState(() {
-                    color1 = Colors.red;
+                    clicked_list[0] = 1;
                   });
-                  players[0].resume();
+                  playSound();
                 },
                 onPanEnd: (details) {
                   setState(() {
-                    color1 = Colors.blue;
+                    clicked_list[0] = 0;
                   });
-                  players[0].stop();
-                  players[0].resume();
-                  players[0].pause();
+                  playSound();
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: color1,
+                    color: clicked_list[0]==1 ? Colors.red : Colors.blue,
                     borderRadius: BorderRadius.all(Radius.circular(30)),
                   ),
                 ),
               ),
             ),
+
             Positioned(
               left: 104,
               top: 151,
               width: 70,
               height: 70,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.all(Radius.circular(35)),
+              child: GestureDetector(
+                onPanDown: (details) {
+                  setState(() {
+                    clicked_list[1] = 1;
+                  });
+                  playSound();
+                },
+                onPanEnd: (details) {
+                  setState(() {
+                    clicked_list[1] = 0;
+                  });
+                  playSound();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: clicked_list[1]==1 ? Colors.red : Colors.blue,
+                    borderRadius: BorderRadius.all(Radius.circular(35)),
+                  ),
                 ),
               ),
             ),
@@ -142,10 +204,24 @@ class _MyHomePageState extends State<MyHomePage> {
               bottom: 0,
               width: 80,
               height: 80,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.all(Radius.circular(40)),
+              child: GestureDetector(
+                onPanDown: (details) {
+                  setState(() {
+                    clicked_list[2] = 1;
+                  });
+                  playSound();
+                },
+                onPanEnd: (details) {
+                  setState(() {
+                    clicked_list[2] = 0;
+                  });
+                  playSound();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: clicked_list[2]==1 ? Colors.red : Colors.blue,
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                  ),
                 ),
               ),
             ),
@@ -157,10 +233,24 @@ class _MyHomePageState extends State<MyHomePage> {
               top: 50,
               width: 70,
               height: 70,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.all(Radius.circular(35)),
+              child: GestureDetector(
+                onPanDown: (details) {
+                  setState(() {
+                    clicked_list[3] = 1;
+                  });
+                  playSound();
+                },
+                onPanEnd: (details) {
+                  setState(() {
+                    clicked_list[3] = 0;
+                  });
+                  playSound();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: clicked_list[3]==1 ? Colors.red : Colors.blue,
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                  ),
                 ),
               ),
             ),
@@ -169,10 +259,24 @@ class _MyHomePageState extends State<MyHomePage> {
               bottom: 86,
               width: 75,
               height: 75,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.all(Radius.circular(35)),
+              child: GestureDetector(
+                onPanDown: (details) {
+                  setState(() {
+                    clicked_list[4] = 1;
+                  });
+                  playSound();
+                },
+                onPanEnd: (details) {
+                  setState(() {
+                    clicked_list[4] = 0;
+                  });
+                  playSound();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: clicked_list[4]==1 ? Colors.red : Colors.blue,
+                    borderRadius: BorderRadius.all(Radius.circular(40)),
+                  ),
                 ),
               ),
             ),
