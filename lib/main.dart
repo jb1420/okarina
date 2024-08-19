@@ -49,50 +49,52 @@ class _MyHomePageState extends State<MyHomePage> {
 
   var clicked_list = [0,0,0,0,0];
 
-  var ex_played = 0;
+  var nowPlaying = 0;
 
-  void playSound(){
-    players[ex_played].stop();
-    
+  void playSound() async{
+    var exPlayed = nowPlaying;
+
     if(ListEquality().equals(clicked_list, [0,1,1,1,1])){
       players[0].resume();
-      ex_played = 0;
+      nowPlaying = 0;
     }
     else if(ListEquality().equals(clicked_list, [0,1,1,0,1])){
       players[1].resume();
-      ex_played = 1;
+      nowPlaying = 1;
     }
     else if(ListEquality().equals(clicked_list, [0,1,1,1,0])){
       players[2].resume();
-      ex_played = 2;
+      nowPlaying = 2;
     }
     else if(ListEquality().equals(clicked_list, [0,1,1,0,0])){
       players[3].resume();
-      ex_played = 3;
+      nowPlaying = 3;
     }
     else if(ListEquality().equals(clicked_list, [0,0,1,0,1])){
       players[4].resume();
-      ex_played = 4;
+      nowPlaying = 4;
     }
     else if(ListEquality().equals(clicked_list, [0,0,1,0,0])){
       players[5].resume();
-      ex_played = 5;
+      nowPlaying = 5;
     }
     else if(ListEquality().equals(clicked_list, [0,0,0,1,0])){
       players[6].resume();
-      ex_played = 6;
+      nowPlaying = 6;
     }
     else if(ListEquality().equals(clicked_list, [1,0,0,0,0])){
       players[7].resume();
-      ex_played = 7;
+      nowPlaying = 7;
     }
     else if(ListEquality().equals(clicked_list, [0,1,0,0,0])){
       players[8].resume();
-      ex_played = 8;
+      nowPlaying = 8;
     }
 
+    players[exPlayed].pause();
 
   }
+
 
   @override
   void initState() {
@@ -102,7 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _loadData() async {
     for (var note in notes){
-      var player = AudioPlayer();
+      AudioPlayer player = AudioPlayer();
+      player.setPlayerMode(PlayerMode.lowLatency);
       await player.setSource(AssetSource(note));
       player.resume();
       player.pause();
@@ -152,18 +155,19 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 60,
               height: 60,
               child: GestureDetector(
-                onPanDown: (details) {
+                onTapDown: (details) {
                   setState(() {
                     clicked_list[0] = 1;
                   });
                   playSound();
                 },
-                onPanEnd: (details) {
+                onTapUp: (details) {
                   setState(() {
                     clicked_list[0] = 0;
                   });
                   playSound();
                 },
+                behavior: HitTestBehavior.translucent,
                 child: Container(
                   decoration: BoxDecoration(
                     color: clicked_list[0]==1 ? Colors.red : Colors.blue,
@@ -179,18 +183,19 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 70,
               height: 70,
               child: GestureDetector(
-                onPanDown: (details) {
+                onTapDown: (details) {
                   setState(() {
                     clicked_list[1] = 1;
                   });
                   playSound();
                 },
-                onPanEnd: (details) {
+                onTapUp: (details) {
                   setState(() {
                     clicked_list[1] = 0;
                   });
                   playSound();
                 },
+                behavior: HitTestBehavior.translucent,
                 child: Container(
                   decoration: BoxDecoration(
                     color: clicked_list[1]==1 ? Colors.red : Colors.blue,
@@ -205,18 +210,19 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 80,
               height: 80,
               child: GestureDetector(
-                onPanDown: (details) {
+                onTapDown: (details) {
                   setState(() {
                     clicked_list[2] = 1;
                   });
                   playSound();
                 },
-                onPanEnd: (details) {
+                onTapUp: (details) {
                   setState(() {
                     clicked_list[2] = 0;
                   });
                   playSound();
                 },
+                behavior: HitTestBehavior.translucent,
                 child: Container(
                   decoration: BoxDecoration(
                     color: clicked_list[2]==1 ? Colors.red : Colors.blue,
@@ -234,18 +240,19 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 70,
               height: 70,
               child: GestureDetector(
-                onPanDown: (details) {
+                onTapDown: (details) {
                   setState(() {
                     clicked_list[3] = 1;
                   });
                   playSound();
                 },
-                onPanEnd: (details) {
+                onTapUp: (details) {
                   setState(() {
                     clicked_list[3] = 0;
                   });
                   playSound();
                 },
+                behavior: HitTestBehavior.translucent,
                 child: Container(
                   decoration: BoxDecoration(
                     color: clicked_list[3]==1 ? Colors.red : Colors.blue,
@@ -260,18 +267,19 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 75,
               height: 75,
               child: GestureDetector(
-                onPanDown: (details) {
+                onTapDown: (details) {
                   setState(() {
                     clicked_list[4] = 1;
                   });
                   playSound();
                 },
-                onPanEnd: (details) {
+                onTapUp: (details) {
                   setState(() {
                     clicked_list[4] = 0;
                   });
                   playSound();
                 },
+                behavior: HitTestBehavior.translucent,
                 child: Container(
                   decoration: BoxDecoration(
                     color: clicked_list[4]==1 ? Colors.red : Colors.blue,
