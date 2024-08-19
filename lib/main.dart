@@ -15,15 +15,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'OKARINA Page',
-      home: const MyHomePage(title: 'OKARINA Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({super.key});
 
-  final String title;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -54,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void playSound() async{
     var exPlayed = nowPlaying;
 
+    players[exPlayed].pause();
     if(ListEquality().equals(clicked_list, [0,1,1,1,1])){
       players[0].resume();
       nowPlaying = 0;
@@ -91,7 +91,6 @@ class _MyHomePageState extends State<MyHomePage> {
       nowPlaying = 8;
     }
 
-    players[exPlayed].pause();
 
   }
 
@@ -116,10 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text(widget.title),
-      ),
       body: FutureBuilder<void>(
         future: _loadingFuture,
         builder: (context, snapshot) {
@@ -155,16 +150,18 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 60,
               height: 60,
               child: GestureDetector(
-                onTapDown: (details) {
+                onPanStart: (details) {
                   setState(() {
                     clicked_list[0] = 1;
                   });
+                  print("clicked");
                   playSound();
                 },
-                onTapUp: (details) {
+                onPanEnd: (details) {
                   setState(() {
                     clicked_list[0] = 0;
                   });
+                  print("UNclicked");
                   playSound();
                 },
                 behavior: HitTestBehavior.translucent,
@@ -183,13 +180,13 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 70,
               height: 70,
               child: GestureDetector(
-                onTapDown: (details) {
+                onPanStart: (details) {
                   setState(() {
                     clicked_list[1] = 1;
                   });
                   playSound();
                 },
-                onTapUp: (details) {
+                onPanEnd: (details) {
                   setState(() {
                     clicked_list[1] = 0;
                   });
@@ -210,13 +207,13 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 80,
               height: 80,
               child: GestureDetector(
-                onTapDown: (details) {
+                onPanStart: (details) {
                   setState(() {
                     clicked_list[2] = 1;
                   });
                   playSound();
                 },
-                onTapUp: (details) {
+                onPanEnd: (details) {
                   setState(() {
                     clicked_list[2] = 0;
                   });
@@ -240,13 +237,13 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 70,
               height: 70,
               child: GestureDetector(
-                onTapDown: (details) {
+                onPanStart: (details) {
                   setState(() {
                     clicked_list[3] = 1;
                   });
                   playSound();
                 },
-                onTapUp: (details) {
+                onPanEnd: (details) {
                   setState(() {
                     clicked_list[3] = 0;
                   });
@@ -267,13 +264,13 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 75,
               height: 75,
               child: GestureDetector(
-                onTapDown: (details) {
+                onPanStart: (details) {
                   setState(() {
                     clicked_list[4] = 1;
                   });
                   playSound();
                 },
-                onTapUp: (details) {
+                onPanEnd: (details) {
                   setState(() {
                     clicked_list[4] = 0;
                   });
