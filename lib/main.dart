@@ -3,7 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:collection/collection.dart';
+import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,39 +32,39 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late Future<void> _loadingFuture;
   final List<String> notes = [
-    'G4.ogg',
-    'G#4.ogg',
-    'A4.ogg',
-    'A#4.ogg',
-    'B4.ogg',
-    'C5.ogg',
-    'C#5.ogg',
-    'D5.ogg',
-    'D#5.ogg',
-    'E5.ogg',
-    'F5.ogg',
-    'F#5.ogg',
-    'G5.ogg',
-    'G#5.ogg',
-    'A5.ogg',
-    'A#5.ogg',
-    'B5.ogg',
-    'C6.ogg',
-    'C#6.ogg',
-    'D6.ogg',
-    'D#6.ogg',
-    'E6.ogg',
-    'F6.ogg',
-    'F#6.ogg',
-    'G6.ogg',
-    'G#6.ogg',
-    'A6.ogg',
-    'A#6.ogg',
-    'B6.ogg',
-    'C7.ogg',
-    'C#7.ogg',
-    'D7.ogg',
-    'D#7.ogg',
+    'G4.mp3',
+    'G#4.mp3',
+    'A4.mp3',
+    'A#4.mp3',
+    'B4.mp3',
+    'C5.mp3',
+    'C#5.mp3',
+    'D5.mp3',
+    'D#5.mp3',
+    'E5.mp3',
+    'F5.mp3',
+    'F#5.mp3',
+    'G5.mp3',
+    'G#5.mp3',
+    'A5.mp3',
+    'A#5.mp3',
+    'B5.mp3',
+    'C6.mp3',
+    'C#6.mp3',
+    'D6.mp3',
+    'D#6.mp3',
+    'E6.mp3',
+    'F6.mp3',
+    'F#6.mp3',
+    'G6.mp3',
+    'G#6.mp3',
+    'A6.mp3',
+    'A#6.mp3',
+    'B6.mp3',
+    'C7.mp3',
+    'C#7.mp3',
+    'D7.mp3',
+    'D#7.mp3',
   ];
 
   Map<int,List<int>> fingers = {
@@ -96,10 +96,13 @@ class _MyHomePageState extends State<MyHomePage> {
   var color1 = Color(0xff82C2F1);
   var color2 = Color(0xffE65E5E);
 
+
   var clickedList = [0,0,0,0,0];
   var nowPlaying = 0;
 
   var settingOpened = false;
+
+  var loadedNum = 0;
 
   var scaleList = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   var nowScale = 0;
@@ -107,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState((){
       nowScale=v;
     });
+    playSound();
   }
 
   double _volume = 70.0;
@@ -114,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _volume = v;
     });
+    playSound();
   }
 
 
@@ -121,7 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void playSound() async{
     var exPlayed = nowPlaying;
 
+
     players[exPlayed].pause();
+    // players[exPlayed].setSourceAsset('shorts/${notes[exPlayed]}');
 
     for(var i in fingers.keys){
       bool equal = true;
@@ -130,9 +137,14 @@ class _MyHomePageState extends State<MyHomePage> {
           equal = false;
         }
       }
+      if(i==17){
+        if(clickedList[0]==0) equal = false;
+      }
       if(equal){
         nowPlaying = i+nowScale;
+        players[nowPlaying].setVolume(_volume/100);
         players[nowPlaying].resume();
+
       }
     }
 
@@ -146,41 +158,33 @@ class _MyHomePageState extends State<MyHomePage> {
     for (int i = 0; i < notes.length; i++) {
       players.add(AudioPlayer());
       players[i].setPlayerMode(PlayerMode.lowLatency);
+      players[i].setReleaseMode(ReleaseMode.loop);
     }
     _loadingFuture = _loadData();
   }
 
   Future<void> _loadData() async {
     try {
-      var futures = List.generate(notes.length, (i) {
-        return players[i].setSource(AssetSource(notes[i])).then((_) {
-          print("############# ${notes[i]} Loaded");
+      for (int i = 0; i < notes.length; i += 3) {
+        // 3개씩 가져오기
+        var futures = List.generate(3, (index) {
+          if (i + index < notes.length) {
+            return players[i + index].setSource(AssetSource('shorts/${notes[i + index]}')).then((_) {
+              setState(() =>loadedNum++);
+            });
+          }
+          return Future.value(); // 인덱스 초과 시 빈 Future 반환
         });
-      });
 
-      await Future.wait(futures);
-      print("############## All Loaded");
+        // 3개씩 로딩 완료할 때까지 기다리기
+        await Future.wait(futures);
+      }
+
     } catch (e) {
       print('##############$e');
     }
   }
 
-
-    // Future<void> _loadData() async {
-    //   try {
-    //     var futures = List.generate(notes.length, (i) {
-    //       return players[i].setSource(AssetSource(notes[i])).then((_) {
-    //         print("############# ${notes[i]} Loaded");
-    //       });
-    //     });
-    //
-    //     await Future.wait(futures);
-    //     print("############## All Loaded");
-    //     await players[0].resume();
-    //   } catch (e) {
-    //     print('##############$e');
-    //   }
-    // }
 
 
 
@@ -192,7 +196,10 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(),
+              // child: CircularProgressIndicator(),
+              child: LoadingPage(
+                loadingValue: loadedNum / notes.length,
+              ),
             );
           } else if (snapshot.hasError) {
             return Center(
@@ -212,14 +219,20 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 100,),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 400),
+
+            height: settingOpened ? 60 : 100,
+          ),
           Center(
             child: Stack(
               children: [
                 Container(
                   width: double.infinity,
-                  height: 500,
                   color: Colors.black,
+                  height: 500,
+
+
                 ),
 
 
@@ -243,20 +256,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     behavior: HitTestBehavior.translucent,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: clickedList[0]==1 ? color2 : color1,
-                        borderRadius: BorderRadius.all(Radius.circular(30)),
-                      ),
-                      child:
+                        decoration: BoxDecoration(
+                          color: clickedList[0]==1 ? color2 : color1,
+                          borderRadius: BorderRadius.all(Radius.circular(30)),
+                        ),
+                        child:
                         Container(
                           margin: EdgeInsets.all(5),
                           decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.all(Radius.circular(30)),
-                            border: Border.all(
-                              color: Colors.black,
-                              width: 4,
-                            )
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 4,
+                              )
                           ),
                         )
                     ),
@@ -282,10 +295,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     behavior: HitTestBehavior.translucent,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: clickedList[1]==1 ? color2 : color1,
-                        borderRadius: BorderRadius.all(Radius.circular(35)),
-                      ),
+                        decoration: BoxDecoration(
+                          color: clickedList[1]==1 ? color2 : color1,
+                          borderRadius: BorderRadius.all(Radius.circular(35)),
+                        ),
                         child:Container(
                           margin: EdgeInsets.all(5),
                           decoration: BoxDecoration(
@@ -320,21 +333,21 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     behavior: HitTestBehavior.translucent,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: clickedList[2]==1 ? color2 : color1,
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
-                      ),
-                      child:Container(
-                        margin: EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.all(Radius.circular(40)),
-                            border: Border.all(
-                              color: Colors.black,
-                              width: 4,
-                            )
+                          color: clickedList[2]==1 ? color2 : color1,
+                          borderRadius: BorderRadius.all(Radius.circular(40)),
                         ),
-                      )
+                        child:Container(
+                          margin: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                              color: Colors.transparent,
+                              borderRadius: BorderRadius.all(Radius.circular(40)),
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 4,
+                              )
+                          ),
+                        )
                     ),
                   ),
                 ),
@@ -360,11 +373,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     behavior: HitTestBehavior.translucent,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: clickedList[3]==1 ? color2 : color1,
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
-                      ),
-                      child:Container(
+                        decoration: BoxDecoration(
+                          color: clickedList[3]==1 ? color2 : color1,
+                          borderRadius: BorderRadius.all(Radius.circular(40)),
+                        ),
+                        child:Container(
                           margin: EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               color: Colors.transparent,
@@ -398,15 +411,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     behavior: HitTestBehavior.translucent,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: clickedList[4]==1 ? color2 : color1,
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                      ),
-                      child:Container(
+                        decoration: BoxDecoration(
+                          color: clickedList[4]==1 ? color2 : color1,
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
+                        ),
+                        child:Container(
                           margin: EdgeInsets.all(5),
                           decoration: BoxDecoration(
                               color: Colors.transparent,
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              borderRadius: BorderRadius.all(Radius.circular(40)),
                               border: Border.all(
                                 color: Colors.black,
                                 width: 4,
@@ -418,14 +431,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
 
 
-              settingWidget(
-                settingOpened : settingOpened,
-                volume : _volume,
-                changeVolume : _changeVolume,
-                scaleList: scaleList,
-                nowScale: nowScale,
-                changeScale: _changeScale,
-              )
+                settingWidget(
+                  settingOpened : settingOpened,
+                  volume : _volume,
+                  changeVolume : _changeVolume,
+                  scaleList: scaleList,
+                  nowScale: nowScale,
+                  changeScale: _changeScale,
+                )
 
               ],
             ),
@@ -434,8 +447,8 @@ class _MyHomePageState extends State<MyHomePage> {
             width: 70,
             height: 70,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(40))
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(40))
             ),
             child: IconButton(
               icon: Icon(Icons.settings_outlined,
@@ -450,7 +463,7 @@ class _MyHomePageState extends State<MyHomePage> {
               focusColor: Colors.transparent,
               hoverColor: Colors.transparent,
               highlightColor: Colors.transparent,
-              
+
             ),
           )
         ],
@@ -519,22 +532,22 @@ class _settingWidgetState extends State<settingWidget> {
                       itemCount: widget.scaleList.length,
                       itemBuilder: (context, index) {
                         return Container(
-                          width: 50,
-                          height: 50,
-                          margin: EdgeInsets.only(left: 5, right: 5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: widget.nowScale==index ? Colors.black38 : Colors.black12,
-                          ),
-                          child: TextButton(
-                            child: Text(widget.scaleList[index],style: TextStyle(color: Colors.black),),
-                            // style: ButtonStyle(
-                            //
-                            // ),
-                            onPressed: () {
-                              widget.changeScale(index);
-                            },
-                          )
+                            width: 50,
+                            height: 50,
+                            margin: EdgeInsets.only(left: 5, right: 5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              color: widget.nowScale==index ? Colors.black38 : Colors.black12,
+                            ),
+                            child: TextButton(
+                              child: Text(widget.scaleList[index],style: TextStyle(color: Colors.black),),
+                              // style: ButtonStyle(
+                              //
+                              // ),
+                              onPressed: () {
+                                widget.changeScale(index);
+                              },
+                            )
                         );
                       },
                     ),
@@ -559,11 +572,62 @@ class _settingWidgetState extends State<settingWidget> {
                         });
                       },
                     ),
-                  )
+                  ),
                 ],
               )
           ),
         ],
+      ),
+    );
+  }
+}
+
+
+
+class LoadingPage extends StatefulWidget {
+  const LoadingPage({Key? key, required this.loadingValue}) : super(key: key);
+
+  final double loadingValue;
+  @override
+  State<LoadingPage> createState() => _LoadingPageState();
+}
+
+class _LoadingPageState extends State<LoadingPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Color(0xff82C2F1),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.only(bottom: 50),
+              child: Text('Simple\nOkarina',
+                style: TextStyle(
+                  fontSize: 60,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Text('Audio Loading...',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.black
+                // fontWeight: FontWeight.
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.all(20),
+              child: LinearProgressIndicator(
+                color: Colors.black,
+                minHeight: 10,
+                borderRadius: BorderRadius.circular(10),
+                value: widget.loadingValue,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
