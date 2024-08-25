@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
 
   audioplayers: ^6.0.0
-  just_audio: ^0.9.38
+  just_audio: ^0.9.39
 
 dev_dependencies:
   flutter_test:
@@ -48,7 +48,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^3.0.0
+  flutter_lints: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -56,29 +56,42 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
   assets:
-    # Suggested code may be subject to a license. Learn more: ~LicenseLog:4001564956.
-    - assets/C4.mp3
-    - assets/C#4.mp3
-    - assets/D4.mp3
-    - assets/D#4.mp3
-    - assets/E4.mp3
-    - assets/F4.mp3
-    - assets/F#4.mp3
-    - assets/G4.mp3
-    - assets/G#4.mp3
-    - assets/A4.mp3
-    - assets/A#4.mp3
-    - assets/B4.mp3
-    - assets/C5.mp3
-    - assets/C#5.mp3
-    - assets/D5.mp3
+    - "assets/G4.ogg"
+    - "assets/G#4.ogg"
+    - "assets/A4.ogg"
+    - "assets/A#4.ogg"
+    - "assets/B4.ogg"
+    - "assets/C5.ogg"
+    - "assets/C#5.ogg"
+    - "assets/D5.ogg"
+    - "assets/D#5.ogg"
+    - "assets/E5.ogg"
+    - "assets/F5.ogg"
+    - "assets/F#5.ogg"
+    - "assets/G5.ogg"
+    - "assets/G#5.ogg"
+    - "assets/A5.ogg"
+    - "assets/A#5.ogg"
+    - "assets/B5.ogg"
+    - "assets/C6.ogg"
+    - "assets/C#6.ogg"
+    - "assets/D6.ogg"
+    - "assets/D#6.ogg"
+    - "assets/E6.ogg"
+    - "assets/F6.ogg"
+    - "assets/F#6.ogg"
+    - "assets/G6.ogg"
+    - "assets/G#6.ogg"
+    - "assets/A6.ogg"
+    - "assets/A#6.ogg"
+    - "assets/B6.ogg"
+    - "assets/C7.ogg"
+    - "assets/C#7.ogg"
+    - "assets/D7.ogg"
+    - "assets/D#7.ogg"
+
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
