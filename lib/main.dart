@@ -196,7 +196,6 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              // child: CircularProgressIndicator(),
               child: LoadingPage(
                 loadingValue: loadedNum / notes.length,
               ),
@@ -221,8 +220,6 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           AnimatedContainer(
             duration: Duration(milliseconds: 400),
-
-            height: settingOpened ? 60 : 100,
           ),
           Center(
             child: Stack(
@@ -230,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Container(
                   width: double.infinity,
                   color: Colors.black,
-                  height: 500,
+                  height: 300, 
 
 
                 ),
@@ -505,7 +502,7 @@ class _settingWidgetState extends State<settingWidget> {
         children: [
           AnimatedContainer(
               duration: Duration(milliseconds: 400),
-              margin: EdgeInsets.only(top : widget.settingOpened ? 250 : 550),
+              margin: EdgeInsets.only(top : widget.settingOpened ? 250 : 450),
               padding: EdgeInsets.fromLTRB(20,10, 20,10),
               width: widget.settingOpened ? 300 : 0,
               height: widget.settingOpened ? 230 : 0,
