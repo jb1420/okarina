@@ -40,7 +40,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
         else if(snapshot.hasError){
           return Dialog(
             child: Center(
-              child: Text("Restart the Application...")
+              child: Text("Please Restart the Application...\n ${snapshot.error}")
             ),
           );
         }
