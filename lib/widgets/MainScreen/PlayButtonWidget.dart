@@ -51,7 +51,7 @@ class _PlayButtonState extends State<PlayButton> {
                   color: widget.audio.clickedList[widget.id] == 1
                     ? widget.ui.color2.withValues(alpha:0.6)
                     : widget.ui.color1.withValues(alpha:0.6),
-                  blurRadius: 30,
+                  blurRadius: 25,
                   spreadRadius: 5,
                 ),
               ]

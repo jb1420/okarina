@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
 
 class UIConstants {
-  Color color1 = Colors.green;
-  Color color2 = Colors.red;
-  Color bgColor = Colors.white;
-
-  bool useGlow = true;
 
   var colorList = [
     Colors.white,
@@ -23,6 +18,12 @@ class UIConstants {
     Color(0xFF8870C4),
     Color(0xFF6D7AE9),
   ];
+
+  Color color1 = Color(0xFFADFBB9);
+  Color color2 = Color(0xFFE7C18D);
+  Color bgColor = Colors.black;
+
+  bool useGlow = true;
 
   TextStyle textStyle1 = const TextStyle(
       fontSize: 40, fontWeight: FontWeight.bold, color: Colors.black);

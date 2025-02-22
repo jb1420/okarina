@@ -23,27 +23,27 @@ class MainScreen extends StatelessWidget {
               children: [
                 Positioned(
                   left: 100,
-                  top: 200,
+                  top: 250,
                   child: PlayButton(id: 0, size: 60, audio: audio, ui: ui),
                 ),
                 Positioned(
                   left: 100,
-                  top: 300,
+                  top: 350,
                   child: PlayButton(id: 1, size: 50, audio: audio, ui: ui),
                 ),
                 Positioned(
                   left: 100,
-                  top: 400,
+                  top: 450,
                   child: PlayButton(id: 2, size: 60, audio: audio, ui: ui),
                 ),
                 Positioned(
                   right: 100,
-                  top: 250,
+                  top: 300,
                   child: PlayButton(id: 3, size: 40, audio: audio, ui: ui),
                 ),
                 Positioned(
                   right: 100,
-                  top: 350,
+                  top: 400,
                   child: PlayButton(id: 4, size: 50, audio: audio, ui: ui),
                 ),
               ],
